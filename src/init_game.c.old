@@ -1,0 +1,102 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <time.h>
+#include "game.h"
+#include "node.h"
+#include "init_game.h"
+
+
+// --------------------- Fonctions d'allocation mémoire -------------------
+
+#define NODE_VAL 7
+
+node *node_init_mem(int *nb_val,int *nb_dir, int *nb_max_b){
+  
+
+  char * string = (char *) malloc (4096 * sizeof(char));
+  if (string == NULL) {
+     fprintf(stderr, "Not enough memory ! \n");
+     exit(EXIT_FAILURE);
+  }
+
+
+  FILE* fichier = NULL;
+  int param[2];
+  int tab_aux[3] = {0,0,0};
+  int j= 0;
+  node *tab_n = NULL;
+  fichier = fopen("game_default.txt", "r+");
+  char *endptr = NULL;
+  char *space = NULL;        //On ouvre le fichier correspodant
+  if (fichier != NULL){                     
+    if (fgets(string, 4096, fichier) == NULL) { 
+        free(string);
+        return NULL;
+    }
+    space = strtok(string, " ");
+    int i = 0;
+    while (space != NULL) {
+        if (space[0] != '\n') {
+           param[i] = strtol(space, &endptr, 10);
+            i++;
+        }
+        space = strtok(NULL, " ");
+    }
+
+    *tab_n = (node*) malloc(param[0] * sizeof(node)); //On alloue la mémoire pour nos noeuds 
+    if(tab_n == NULL){
+      fprintf(stderr, "NOT ENOUGH MEMORY!\n");
+    }
+    nb_val = param[0];
+    nb_max_b = param[1];       //On enregistre nos parametres 
+    nb_dir = param[2];
+
+    i=0;
+    for (int k = 0; k < param[0]; k++)
+    {
+        char * space;                           
+        if (fgets(string, 4096, fichier) == NULL) { 
+          free(string);
+          return NULL;
+        }
+        space = strtok(string, " ");
+        while (space != NULL) {
+          if (space[0] != '\n') {
+            tab_aux[i] = strtol(space, &endptr, 10);
+            i++;
+          }
+        space = strtok(NULL, " ");
+        }
+        if(i>=3){
+                tab_n[j]= new_node(tab_aux[0]-48,tab_aux[1]-48,tab_aux[2]-48); // -48 car tab_aux stocke un caractère -> permet d'avoir un int 
+                i = 0;
+                j++;
+        }
+      }
+    fclose(fichier);
+    }   
+    else
+    {
+        // On affiche un message d'erreur si on veut
+        printf("Impossible d'ouvrir le fichier.");
+    }
+   
+  free(string);
+  return tab_n;
+}
+
+game game_init_mem(){
+  game n_game = (game) malloc(sizeof(game));
+  if(n_game == NULL){
+      fprintf(stderr, "NOT ENOUGH MEMORY!\n");
+   }
+   return n_game;
+}
+//----------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+void free_tab(node *tab_n){
+  for(int i=0; i<NODE_VAL; ++i)
+    free(tab_n[i]);
+  free(tab_n);
+}

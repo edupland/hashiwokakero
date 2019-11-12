@@ -1,0 +1,476 @@
+#include <stdbool.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include "node.h"
+
+typedef enum dir_e{NORTH, WEST, SOUTH, EAST, NW, NE, SW, SE}dir;
+
+
+typedef struct game_s{
+   int nb_nodes;   //Le nombre des noeuds qu'il y a dans le fichier exemple_jeu.txt
+   node *nodes_tab; //Le tableau dans lequel on initialise les nodes dans hashi_text par le biais du fichier texte
+   int **ponts; //Tableau de dimension 2 représentant les ponts
+   int x_max;  //coordonné max en absisse du jeu
+   int y_max; //coordonnée max en ordonnée du jeu
+   int nb_bridges;
+   int nb_dir;
+}game_s; 
+
+typedef struct game_s* game;
+
+/*struct game_p{
+   game_s *copy;
+}cgame;*/
+typedef const struct game_s* cgame;
+
+//--------------------------- Fonction d'allocation / Suppression / Modification/ mémoire -------------------------------
+game new_game (int nb_nodes, node *nodes, int nb_max_bridges, int nb_dir){
+   int x=0;
+   int y=0;
+   game g = malloc(sizeof(game)); // On alloue de la mémoire pour le jeu.
+   if(g==NULL){
+      fprintf(stderr, "No memory for you sorry dude\n");
+      exit(EXIT_FAILURE);
+      }
+   g->nb_nodes=nb_nodes; // On associe les différentes données en paramètres dans la structure game.
+   g->nodes_tab=nodes;
+   g->nb_bridges=nb_max_bridges;
+   g->nb_dir=nb_dir;
+
+   for(int i=0;i<nb_nodes;i++){
+      if(get_x(nodes[i]) >  x)  // On récupére les coordonnées maximales du nodes_tab.
+          x = get_x(nodes[i]);
+      if(get_y(nodes[i]) >  y)
+          y = get_y(nodes[i]);
+   }
+   g->ponts = (int**) malloc(2*x*sizeof(int*)); // On créé un tableau à deux dimensions pour y insérer nodes et ponts.
+   if(g->ponts==NULL){
+      fprintf(stderr, "No memory for you sorry dude\n");
+      exit(EXIT_FAILURE);
+   }
+   for(int i=0; i<=2*x; i++){ // On alloue les cases verticalement
+      g->ponts[i] = (int*) calloc(2*y,sizeof(int));
+      if(g->ponts[i]==NULL){
+         fprintf(stderr, "not enough memory!!\n");
+         exit(EXIT_FAILURE);
+      }
+   }
+   //g->ponts=tab_pont;
+   g->x_max=2*x;
+   g->y_max=2*y;
+
+   return g;
+}
+
+void delete_game(game g){
+   for(int i=0; i<g->x_max+1;i++)
+      free(g->ponts[i]);
+   free(g->ponts);
+   free(g);
+}
+
+game copy_game(cgame g_src){
+   //copie de la game
+   game g_duplicate= malloc(sizeof(game));
+   g_duplicate->nb_nodes = g_src->nb_nodes;
+   g_duplicate->nodes_tab = g_src->nodes_tab;
+   g_duplicate->ponts = g_src->ponts;
+   g_duplicate->x_max = g_src->x_max;
+   g_duplicate->y_max = g_src->y_max;
+   return g_duplicate;
+}
+
+//-------------------------------------------------------------------------------------------------------------
+//-------------------------------------Fonction de retour de node ---------------------------------------------
+int game_nb_nodes(cgame g){
+   //retourne le nombre de node de la game
+   return g->nb_nodes;
+}
+
+node game_node(cgame g,int num_node){
+   //retourne la node au numéro indiqué
+   return g->nodes_tab[num_node];
+}
+
+//--------------------------------------------------------------------------------------------------------------
+
+//----------------------------------- Récupération d'information sur la direction/degrée des nodes--------------
+
+int get_neighbour_dir(cgame g, int num_node, dir direction){
+   int x = get_x(g->nodes_tab[num_node]);
+   int y = get_y(g->nodes_tab[num_node]);
+   //On récupére les coordonnées x et y de num_node
+   switch(direction){
+      case NORTH:
+         if(y==g->y_max)return -1;
+         for(int i=y+1;i<g->y_max;i++)
+            for(int j=0;j<g->nb_nodes;j++)
+               if(x==get_x(g->nodes_tab[j]) && i==get_y(g->nodes_tab[j]))
+                  return j;
+      break;
+      case EAST:
+         if(x==g->x_max)return -1;
+         for(int i=x+1;i<g->x_max;i++)
+            for(int j=0;j<g->nb_nodes;j++)
+               if(i==get_x(g->nodes_tab[j]) && y==get_y(g->nodes_tab[j]))
+                  return j;
+      break;
+      case SOUTH:
+         if(y==0)return -1;
+            for(int i=y-1;i>=0;i--)
+               for(int j=0;j<g->nb_nodes;j++)
+                  if(x==get_x(g->nodes_tab[j]) && i==get_y(g->nodes_tab[j]))
+                  return j;
+      break;
+      case WEST:
+         if(x==0)return -1;
+            for(int i=x-1;i>=0;i--)
+               for(int j=0;j<g->nb_nodes;j++)
+                  if(i==get_x(g->nodes_tab[j]) && y==get_y(g->nodes_tab[j]))
+                  return j;
+      break;
+      case NW:
+         if(g->nb_dir==4)break;
+         if(x==0 || y == g->y_max)return -1;
+            for(int i=y+1,j=x-1;i<g->y_max && j>=0;i++,j++)
+               for(int k=0;k<g->nb_nodes;k++)
+                  if(i==get_y(g->nodes_tab[k]) && j==get_x(g->nodes_tab[k]))
+                  return k;
+      break;
+      case NE:
+         if(g->nb_dir==4)break;
+         if(x==g->x_max || y == g->y_max)return -1;
+            for(int i=y+1,j=x+1;i<g->y_max && j<=g->x_max;i++,j++)
+               for(int k=0;k<g->nb_nodes;k++)
+                  if(i==get_x(g->nodes_tab[k]) && j==get_y(g->nodes_tab[k]))
+                  return k;
+      break;
+      case SW:
+         if(g->nb_dir==4)break;
+         if(x==0 || y==0)return -1;
+            for(int i=y-1,j=x-1;i<g->y_max && j>=0;i--,j--)
+               for(int k=0;k<g->nb_nodes;k++)
+                  if(i==get_x(g->nodes_tab[k]) && j==get_y(g->nodes_tab[k]))
+                  return k;
+      break;
+      case SE:
+         if(g->nb_dir==4)break;
+         if(x==g->x_max || y==0)return -1;
+            for(int i=y-1,j=x+1;i<g->y_max && j>=0;i--,j++)
+               for(int k=0;k<g->nb_nodes;k++)
+                  if(i==get_x(g->nodes_tab[k]) && j==get_y(g->nodes_tab[k]))
+                  return k;
+      break;
+   }
+   return -1; // Dans le pire des cas on renvoie -1 => Il n'y a aucun voisin
+}
+
+
+int get_degree_dir(cgame g,int num_node,dir direction){
+   // On retourne le nombre de pont correspondant à la direction
+   int x=2*get_x(g->nodes_tab[num_node]);
+   int y=2*get_y(g->nodes_tab[num_node]);
+   switch(direction){
+      case NORTH:
+         if(y>=g->y_max)return 0;
+         return g->ponts[x][y+1];
+      case EAST:
+         if(x>=g->x_max)return 0;
+         return g->ponts[x+1][y];
+      case SOUTH:
+         if(y<=0)return 0;
+         return g->ponts[x][y-1];
+      case WEST:
+         if(x<=0)return 0;
+         return g->ponts[x-1][y];
+      case NW:
+         if(g->nb_dir==4)break;
+         if(x<=0 || y >= g->y_max)return 0;
+         return g->ponts[x-1][y+1];
+      case NE:
+         if(g->nb_dir==4)break;
+         if(x>=g->x_max || y >= g->y_max)return 0;
+         return g->ponts[x+1][y+1];
+      case SW:
+         if(g->nb_dir==4)break;
+         if(x<=0 || y<=0)return 0;
+         return g->ponts[x-1][y-1];
+      case SE:
+         if(g->nb_dir==4)break;
+         if(x<=g->x_max || y<=0)return 0;
+         return g->ponts[x+1][y-1];
+   }
+   return 0;
+}
+
+int get_degree(cgame g,int num_node){
+   //retourne le nombre de ponts arrivant a la node num_node
+   int x = 2*get_x(g->nodes_tab[num_node]);
+   int y = 2*get_y(g->nodes_tab[num_node]);
+   return g->ponts[x][y];
+}
+//-----------------------------------------------------------------------------------------------------
+bool game_over(cgame g){
+   //Teste la connexité sur tous les nodes de nodes tab.
+   for(int i=0;i<g->nb_nodes;i++)
+      if(get_degree(g,i) != get_required_degree(g->nodes_tab[i]))
+         return false;
+   printf("Bravo vous avez gagné !\n");
+   return true;
+}
+
+
+//------------------------------------ Fonction d'ajout/Suppression/test de ponts ------------------------------
+
+void add_bridge_dir(game g,int num_node,dir direction){
+   for(int j = g->y_max; j>=0; j--){
+      for(int i=0; i<=g->x_max; i++){
+         printf("%d", g->ponts[i][j]);
+      }
+      printf("\n");
+   }
+   cgame copy=g;
+   int p=get_neighbour_dir(copy,num_node,direction); // On ne modifie pas les ponts existant grâce à la copie de g
+   //On incrémente le segment de 1 pour chaque direction
+   switch(direction){
+      case NORTH: 
+      {
+         int pos_x = 2*get_x(g->nodes_tab[num_node]);
+         for(int i =2*get_y(g->nodes_tab[num_node]);i<=2*get_y(g->nodes_tab[p]);i++)
+            g->ponts[pos_x][i]++;
+         break;
+
+      }  
+      case EAST:
+      {
+         int pos_y = 2*get_y(g->nodes_tab[num_node]);
+         for(int i =2*get_x(g->nodes_tab[num_node]);2*i<=get_x(g->nodes_tab[p]);i++)
+            g->ponts[i][pos_y]++;
+         break;
+      }
+      case SOUTH:
+      {
+         int pos_x = 2*get_x(g->nodes_tab[num_node]);
+         for(int i =2*get_y(g->nodes_tab[num_node]);i>=2*get_y(g->nodes_tab[p]);i--)
+            g->ponts[pos_x][i]++;
+         break;
+      }
+      
+      case WEST:
+      {
+         int pos_y = 2*get_y(g->nodes_tab[num_node]);
+         for(int i =2*get_x(g->nodes_tab[num_node]);i>=2*get_x(g->nodes_tab[p]);i--)
+            g->ponts[i][pos_y]++;
+         break;
+      }
+      case NW: 
+      {
+         if(g->nb_dir==4)break;
+         for(int i =2*get_y(g->nodes_tab[num_node]),j=2*get_x(g->nodes_tab[num_node]);i<=2*get_y(g->nodes_tab[p]) && j>=2*get_x(g->nodes_tab[p]) ;i++,j--)
+            g->ponts[j][i]++;
+         break;
+
+      }  
+      case NE:
+      {
+         if(g->nb_dir==4)break;
+         for(int i =2*get_y(g->nodes_tab[num_node]),j=2*get_x(g->nodes_tab[num_node]);i<=2*get_y(g->nodes_tab[p]) && j<=2*get_x(g->nodes_tab[p]) ;i++,j++)
+            g->ponts[j][i]++;
+         break;
+      }
+      case SW:
+      {
+         if(g->nb_dir==4)break;
+         for(int i =2*get_y(g->nodes_tab[num_node]),j=2*get_x(g->nodes_tab[num_node]);i>=2*get_y(g->nodes_tab[p]) && j>=2*get_x(g->nodes_tab[p]) ;i--,j--)
+            g->ponts[j][i]++;
+         break;
+      }
+      
+      case SE:
+      {
+         if(g->nb_dir==4)break;
+         for(int i =2*get_y(g->nodes_tab[num_node]),j=2*get_x(g->nodes_tab[num_node]);i>=2*get_y(g->nodes_tab[p]) && j<=2*get_x(g->nodes_tab[p]) ;i--,j++)
+            g->ponts[j][i]++;
+         break;
+      }
+      
+      
+   }
+}
+
+void del_bridge_dir(game g,int num_node,dir direction){
+   /*for(int j = g->y_max; j>=0; j--){
+      for(int i=0; i<=g->x_max; i++){
+         printf("%d", g->ponts[i][j]);
+      }
+      printf("\n");
+   }*/
+   cgame q=g;
+   if(get_degree_dir(q,num_node,direction) == 0)
+      return;
+   int p=get_neighbour_dir(q,num_node,direction);
+   switch(direction){
+      case NORTH:
+      {
+         int pos_x = 2*get_x(g->nodes_tab[num_node]);
+         for(int i =2*get_y(g->nodes_tab[num_node]);i<=2*get_y(g->nodes_tab[p]);i++)
+            g->ponts[pos_x][i]--;
+         break;
+      }
+      
+      case EAST:
+      {
+         int pos_y = 2*get_y(g->nodes_tab[num_node]);
+         for(int i =2*get_x(g->nodes_tab[num_node]);i<=2*get_x(g->nodes_tab[p]);i++)
+            g->ponts[i][pos_y]--;
+         break;
+      }
+      case SOUTH:
+      {
+         int pos_x = 2*get_x(g->nodes_tab[num_node]);
+         for(int i =2*get_y(g->nodes_tab[num_node]);i>=2*get_y(g->nodes_tab[p]);i--)
+            g->ponts[pos_x][i]--;
+         break;
+      }
+      case WEST:
+      {
+         int pos_y = 2*get_y(g->nodes_tab[num_node]);
+         for(int i =2*get_x(g->nodes_tab[num_node]);i>=2*get_x(g->nodes_tab[p]);i--)
+            g->ponts[i][pos_y]--;
+         break;
+      }
+      case NW: 
+      {
+         if(g->nb_dir==4)break;
+         for(int i =2*get_y(g->nodes_tab[num_node]),j=2*get_x(g->nodes_tab[num_node]);i<=2*get_y(g->nodes_tab[p]) && j>=2*get_x(g->nodes_tab[p]) ;i++,j--)
+            g->ponts[j][i]--;
+         break;
+
+      }  
+      case NE:
+      {
+         if(g->nb_dir==4)break;
+         for(int i =2*get_y(g->nodes_tab[num_node]),j=2*get_x(g->nodes_tab[num_node]);i<=2*get_y(g->nodes_tab[p]) && j<=2*get_x(g->nodes_tab[p]) ;i++,j++)
+            g->ponts[j][i]--;
+         break;
+      }
+      case SW:
+      {
+         if(g->nb_dir==4)break;
+         for(int i =2*get_y(g->nodes_tab[num_node]),j=2*get_x(g->nodes_tab[num_node]);i>=2*get_y(g->nodes_tab[p]) && j>=2*get_x(g->nodes_tab[p]) ;i--,j--)
+            g->ponts[j][i]--;
+         break;
+      }
+      
+      case SE:
+      {
+         if(g->nb_dir==4)break;
+         for(int i =2*get_y(g->nodes_tab[num_node]),j=2*get_x(g->nodes_tab[num_node]);i>=2*get_y(g->nodes_tab[p]) && j<=2*get_x(g->nodes_tab[p]) ;i--,j++)
+            g->ponts[j][i]--;
+         break;
+      }
+      
+   } // On decrémente
+}
+
+bool can_add_bridge_dir(cgame g,int node_num,dir direction){
+   /*for(int j = g->y_max; j>=0; j--){
+      for(int i=0; i<=g->x_max; i++){
+         printf("%d", g->ponts[i][j]);
+      }
+      printf("\n");
+   }*/
+   int p=get_neighbour_dir(g,node_num,direction);
+   if(p==-1)return false;
+   node node_degree = game_node(g,node_num);
+   if(get_degree(g,p)>=get_required_degree(g->nodes_tab[p]))return false;
+   if(get_degree(g,node_num)>=get_required_degree(g->nodes_tab[node_num]))return false;
+   if(get_degree_dir(g,node_num,direction)>=get_required_degree(node_degree))return false;
+   if(get_degree_dir(g,node_num,direction)>=g->nb_bridges)return false;
+   /*if(get_degree(g,p)==get_required_degree(g->nodes_tab[p]) || get_degree(g,node_num)==get_required_degree(g->nodes_tab[node_num]))
+      return false;
+   if(get_degree_dir(g,node_num,direction) >= 2)
+      return false;*/
+   
+   if(get_degree_dir(g,node_num,direction) == 1)
+      return true;
+   
+   switch(direction){
+      case NORTH:
+      {
+         int pos_x = 2 * get_x(g->nodes_tab[node_num]);
+         for(int i =2*get_y(g->nodes_tab[node_num])+1;i<2*get_y(g->nodes_tab[p]);i++){
+            if(g->ponts[pos_x][i]!=0){
+               return false;
+            }
+         }
+         break;
+      }
+      case EAST:
+      {
+         int pos_y = 2 * get_y(g->nodes_tab[node_num]);
+         for(int i =2*get_x(g->nodes_tab[node_num])+1;i<2*get_x(g->nodes_tab[p]);i++)
+            if(g->ponts[i][pos_y]!=0)
+               return false;
+         break;
+      }
+      case SOUTH:
+      {
+         int pos_x = 2 * get_x(g->nodes_tab[node_num]);
+         for(int i =2*get_y(g->nodes_tab[node_num])-1;i<2*get_y(g->nodes_tab[p]);i--)
+            if(g->ponts[pos_x][i]!=0)
+               return false;
+         break;
+      }
+      case WEST:
+      {
+         int pos_y = 2 * get_y(g->nodes_tab[node_num]);
+         for(int i =2*get_x(g->nodes_tab[node_num])-1;i<2*get_x(g->nodes_tab[p]);i--)
+            if(g->ponts[i][pos_y]!=0)
+               return false;
+      break;
+      }
+      case NW:
+      {
+         if(g->nb_dir==4)return false;
+         for(int i =2*get_y(g->nodes_tab[node_num])+1,j=2*get_x(g->nodes_tab[node_num])-1;i<2*get_y(g->nodes_tab[p]) && j>2*get_x(g->nodes_tab[p]) ;i++,j--)
+            if(g->ponts[j][i]!=0)
+               return false;
+         break;
+      }
+      case NE:
+      {
+         if(g->nb_dir==4)return false;
+         for(int i =2*get_y(g->nodes_tab[node_num])+1,j=2*get_x(g->nodes_tab[node_num])-1;i<2*get_y(g->nodes_tab[p]) && j>2*get_x(g->nodes_tab[p]) ;i++,j++)
+            if(g->ponts[j][i]!=0)
+               return false;
+         break;
+      }
+      case SW:
+      {
+         if(g->nb_dir==4)return false;
+         for(int i =2*get_y(g->nodes_tab[node_num])+1,j=2*get_x(g->nodes_tab[node_num])-1;i>2*get_y(g->nodes_tab[p]) && j>2*get_x(g->nodes_tab[p]) ;i--,j--)
+            if(g->ponts[j][i]!=0)
+               return false;
+         break;
+      }
+      case SE:
+      {
+         if(g->nb_dir==4)return false;
+         for(int i =2*get_y(g->nodes_tab[node_num])+1,j=2*get_x(g->nodes_tab[node_num])-1;i>2*get_y(g->nodes_tab[p]) && j<2*get_x(g->nodes_tab[p]) ;i--,j++)
+            if(g->ponts[j][i]!=0)
+               return false;
+         break;
+   }
+}
+   return true;
+}
+
+int game_get_node_number(cgame g,int x,int y){
+   //retourne la node placée en (x,y)
+   
+   for(int i=0;i<g->nb_nodes;i++)
+      if(x==get_x(g->nodes_tab[i]) && y ==get_y(g->nodes_tab[i]))
+         return i;
+   return -1;
+}

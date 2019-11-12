@@ -1,0 +1,16 @@
+Version 2 Projet :
+
+Modification du game.c : Adrien Javel
+Modification du hashi_text.c : Quentin Duard
+Recherche de solution pour l'affichage de plusieurs ponts : Erwan Dupland 
+
+
+
+A faire : 
+
+- Implémenter game.c et modifier fonctions can_add_bridge_dir, add_bridge_dir et del_bridge_dir : FAIT
+- Implementer hashi_text.c et modifier l'affichage de tgrid** (Tableaux d'affichage du jeux): EN COURS
+- Trouver solution pour fixer une nombre de ponts maximum autorisé : A FAIRE
+
+- Résoudre probème de fuite mémoire à l'aide de Valgrind : A FAIRE
+- Recherche de Bug éventuel : EN COURS 

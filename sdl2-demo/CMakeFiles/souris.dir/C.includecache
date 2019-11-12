@@ -1,0 +1,32 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/net/cremi/edupland/L2/Projet_Tech/hashitm4b2/sdl2-demo/main.c
+SDL2/SDL.h
+-
+SDL2/SDL_image.h
+-
+SDL2/SDL_ttf.h
+-
+stdio.h
+-
+stdbool.h
+-
+model.h
+/net/cremi/edupland/L2/Projet_Tech/hashitm4b2/sdl2-demo/model.h
+
+/net/cremi/edupland/L2/Projet_Tech/hashitm4b2/sdl2-demo/model.h
+SDL2/SDL.h
+-
+stdio.h
+-
+stdbool.h
+-
+
+/net/cremi/edupland/L2/Projet_Tech/hashitm4b2/sdl2-demo/souris.c
+

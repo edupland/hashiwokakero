@@ -1,0 +1,1 @@
+/usr/bin/cc  -std=c99 -g -Wall   CMakeFiles/curseur.dir/main.c.o CMakeFiles/curseur.dir/curseur.c.o  -o curseur -rdynamic -Wl,-Bstatic -lSDL2main -Wl,-Bdynamic -lSDL2 -lpthread -lSDL2_image -lSDL2_ttf 

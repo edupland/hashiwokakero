@@ -1,0 +1,23 @@
+\BOOKMARK [-1][-]{part.1}{I Hashiwokakero en mode texte}{}% 1
+\BOOKMARK [0][-]{chapter.1}{Hashiwokakero V1}{part.1}% 2
+\BOOKMARK [1][-]{section.1.1}{Les r\350gles originales}{chapter.1}% 3
+\BOOKMARK [2][-]{subsection.1.1.1}{game.c}{section.1.1}% 4
+\BOOKMARK [2][-]{subsection.1.1.2}{node.c}{section.1.1}% 5
+\BOOKMARK [2][-]{subsection.1.1.3}{Cr\351ation de libhashi.a}{section.1.1}% 6
+\BOOKMARK [0][-]{chapter.2}{Hashiwokakero V2}{part.1}% 7
+\BOOKMARK [1][-]{section.2.1}{Le caprice du client}{chapter.2}% 8
+\BOOKMARK [2][-]{subsection.2.1.1}{Nouvelle impl\351mentation de game.c}{section.2.1}% 9
+\BOOKMARK [0][-]{chapter.3}{Solveur du hashiwokakero}{part.1}% 10
+\BOOKMARK [1][-]{section.3.1}{Impl\351mentation du solveur}{chapter.3}% 11
+\BOOKMARK [2][-]{subsection.3.1.1}{Play auto}{section.3.1}% 12
+\BOOKMARK [2][-]{subsection.3.1.2}{Solveur r\351cursif}{section.3.1}% 13
+\BOOKMARK [2][-]{subsection.3.1.3}{Conclusion sur le solveur}{section.3.1}% 14
+\BOOKMARK [-1][-]{part.2}{II Hashiwokakero en interface graphique}{}% 15
+\BOOKMARK [0][-]{chapter.4}{Hashiwokakero SDL2}{part.2}% 16
+\BOOKMARK [1][-]{section.4.1}{Le jeu en interface graphique avec la SDL2}{chapter.4}% 17
+\BOOKMARK [2][-]{subsection.4.1.1}{Impl\351mentation de l'interface graphique}{section.4.1}% 18
+\BOOKMARK [2][-]{subsection.4.1.2}{Impl\351mentation du jeu}{section.4.1}% 19
+\BOOKMARK [-1][-]{part.3}{III Compilation}{}% 20
+\BOOKMARK [0][-]{chapter.5}{Compilation}{part.3}% 21
+\BOOKMARK [1][-]{section.5.1}{Makefile}{chapter.5}% 22
+\BOOKMARK [1][-]{section.5.2}{cmake}{chapter.5}% 23

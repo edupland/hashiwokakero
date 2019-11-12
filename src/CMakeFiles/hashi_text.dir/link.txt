@@ -1,0 +1,1 @@
+/usr/bin/cc  -std=c99 -g -Wall   CMakeFiles/hashi_text.dir/hashi_text.c.o CMakeFiles/hashi_text.dir/grid_update.c.o CMakeFiles/hashi_text.dir/init_game.c.o CMakeFiles/hashi_text.dir/user_interac.c.o  -o hashi_text -rdynamic -lm libhashi.a 

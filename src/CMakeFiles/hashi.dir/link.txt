@@ -1,0 +1,2 @@
+/usr/bin/ar qc libhashi.a  CMakeFiles/hashi.dir/node.c.o CMakeFiles/hashi.dir/game.c.o
+/usr/bin/ranlib libhashi.a

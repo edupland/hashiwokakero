@@ -1,0 +1,88 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/oknax/Bureau/Licence 2/git (copie)/hashitm4b/src/grid_update.c
+stdlib.h
+-
+stdio.h
+-
+time.h
+-
+game.h
+/home/oknax/Bureau/Licence 2/git (copie)/hashitm4b/src/game.h
+node.h
+/home/oknax/Bureau/Licence 2/git (copie)/hashitm4b/src/node.h
+grid_update.h
+/home/oknax/Bureau/Licence 2/git (copie)/hashitm4b/src/grid_update.h
+
+/home/oknax/Bureau/Licence 2/git (copie)/hashitm4b/src/hashi_text.c
+stdlib.h
+-
+stdio.h
+-
+time.h
+-
+game.h
+/home/oknax/Bureau/Licence 2/git (copie)/hashitm4b/src/game.h
+node.h
+/home/oknax/Bureau/Licence 2/git (copie)/hashitm4b/src/node.h
+grid_update.h
+/home/oknax/Bureau/Licence 2/git (copie)/hashitm4b/src/grid_update.h
+init_game.h
+/home/oknax/Bureau/Licence 2/git (copie)/hashitm4b/src/init_game.h
+user_interac.h
+/home/oknax/Bureau/Licence 2/git (copie)/hashitm4b/src/user_interac.h
+
+/home/oknax/Bureau/Licence 2/git (copie)/hashitm4b/src/init_game.c
+stdlib.h
+-
+stdio.h
+-
+time.h
+-
+game.h
+/home/oknax/Bureau/Licence 2/git (copie)/hashitm4b/src/game.h
+node.h
+/home/oknax/Bureau/Licence 2/git (copie)/hashitm4b/src/node.h
+init_game.h
+/home/oknax/Bureau/Licence 2/git (copie)/hashitm4b/src/init_game.h
+
+/home/oknax/Bureau/Licence 2/git (copie)/hashitm4b/src/user_interac.c
+stdlib.h
+-
+stdio.h
+-
+time.h
+-
+game.h
+/home/oknax/Bureau/Licence 2/git (copie)/hashitm4b/src/game.h
+node.h
+/home/oknax/Bureau/Licence 2/git (copie)/hashitm4b/src/node.h
+
+include/game.h
+stdbool.h
+-
+node.h
+include/node.h
+
+include/grid_update.h
+stdbool.h
+-
+
+include/init_game.h
+stdbool.h
+-
+
+include/node.h
+stdbool.h
+-
+
+include/user_interac.h
+stdbool.h
+-
+

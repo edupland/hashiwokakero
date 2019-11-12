@@ -1,0 +1,756 @@
+// SDL2 Demo by aurelien.esnard@u-bordeaux.fr
+
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>  // required to load transparent texture from PNG
+#include <SDL2/SDL_ttf.h>    // required to use TTF fonts     
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include "model.h"
+
+/* **************************************************************** */
+
+#define FONT "Police/cs_regular.ttf"
+#define FONT1 "Police/FLATS.ttf"
+#define FONTSIZE 36
+#define SIZE 65
+#define BACKGROUND "fond2.jpg"
+#define CURSEUR "curseur.png"
+#define FLECHE "images.png"
+
+/* **************************************************************** */
+     
+struct Env_t {
+
+  /* PUT YOUR VARIABLES HERE */
+
+  SDL_Texture * background; 
+  SDL_Texture * text;
+  SDL_Texture * text1;  
+  SDL_Texture * text2;
+  SDL_Texture * text3;
+  SDL_Texture * text4;
+  SDL_Texture * textbis;
+  SDL_Texture * text1bis;  
+  SDL_Texture * text2bis;
+  SDL_Texture * text3bis;
+  SDL_Texture * text4bis;
+  SDL_Texture * fleche;
+  SDL_Texture * flechebis;
+  SDL_Texture * flecheor;
+  SDL_Texture * text1or;
+  SDL_Texture * text2or;
+  SDL_Texture * text3or;
+  SDL_Texture * text4or;
+  SDL_Texture * choix;
+  SDL_Texture * easy;
+  SDL_Texture * easybis;
+  SDL_Texture * easyor;
+  SDL_Texture * medium;
+  SDL_Texture * mediumbis;
+  SDL_Texture * mediumor;
+  SDL_Texture * hard;
+  SDL_Texture * hardbis;
+  SDL_Texture * hardor;
+  SDL_Texture * help;
+  SDL_Texture * helpor;
+  SDL_Texture * sol;
+  SDL_Texture * solor;
+  SDL_Texture * home;
+  SDL_Texture * homebis;
+  SDL_Texture * homeor;
+  SDL_Texture * tmp;
+  SDL_Texture * curseur;
+  
+  int souris_x, souris_y;
+  int curseur_x, curseur_y;
+  int menu;
+  int game;
+
+}; 
+     
+/* **************************************************************** */
+     
+Env * init(SDL_Window* win, SDL_Renderer* ren, int argc, char* argv[])
+{  
+  Env * env = malloc(sizeof(struct Env_t));
+
+  PRINT("Cliquez sur l'option voulue\n");
+
+  /* PUT YOUR CODE HERE TO INIT TEXTURES, ... */
+
+  /* get current window size */
+  int w, h;
+  SDL_GetWindowSize(win, &w, &h);
+
+
+  /* init positions */
+  env->souris_x = 0;
+  env->souris_y = 0;
+  env->curseur_x = w/2;
+  env->curseur_y = 7*h/16;
+  env->menu = 0;
+  env->game = 3;
+
+
+  /* init background texture from PNG image */
+  env->background = IMG_LoadTexture(ren, BACKGROUND);
+  if(!env->background) ERROR("IMG_LoadTexture: %s\n", BACKGROUND);
+
+  /* init curseur texture from PNG image */
+  env->curseur = IMG_LoadTexture(ren, CURSEUR);
+  if(!env->curseur) ERROR("IMG_LoadTexture: %s\n", CURSEUR);
+
+  /* TITRE : HASHIWOKAKERO */
+  
+    /* init text texture using Arial font */
+  SDL_Color color = { 200,200,200, 255 }; /* blue color in RGBA */
+  TTF_Font * font = TTF_OpenFont(FONT1, SIZE);
+  if(!font) ERROR("TTF_OpenFont: %s\n", FONT1);
+  TTF_SetFontStyle(font, TTF_STYLE_NORMAL); // TTF_STYLE_ITALIC | TTF_STYLE_NORMAL
+  SDL_Surface * surf = TTF_RenderText_Blended(font, "HASHIWOKAKERO", color); // blended rendering for ultra nice text
+  env->text = SDL_CreateTextureFromSurface(ren, surf);
+  SDL_FreeSurface(surf);
+  TTF_CloseFont(font);
+  
+  /* NOUVELLE PARTIE BLANC */
+
+  /* init text texture using Arial font */
+  SDL_Color color1 = {200,200,200,255}; /* blue color in RGBA */
+  TTF_Font * font1 = TTF_OpenFont(FONT, FONTSIZE);
+  if(!font1) ERROR("TTF_OpenFont: %s\n", FONT);
+  TTF_SetFontStyle(font1, TTF_STYLE_NORMAL); // TTF_STYLE_ITALIC | TTF_STYLE_NORMAL
+  SDL_Surface * surf1 = TTF_RenderText_Blended(font1, "Nouvelle Partie", color1); // blended rendering for ultra nice text
+  env->text1 = SDL_CreateTextureFromSurface(ren, surf1);
+  env->text1bis = SDL_CreateTextureFromSurface(ren, surf1);
+  SDL_FreeSurface(surf1);
+  TTF_CloseFont(font1);
+  
+  /* NOUVELLE PARTIE ORANGE */
+  
+  SDL_Color color1bis = {167,103,38,255};
+  TTF_Font * font1bis = TTF_OpenFont(FONT, FONTSIZE);
+  if(!font1bis) ERROR("TTF_OpenFont: %s\n", FONT);
+  TTF_SetFontStyle(font1bis, TTF_STYLE_ITALIC); // TTF_STYLE_ITALIC | TTF_STYLE_NORMAL
+  SDL_Surface * surf1bis = TTF_RenderText_Blended(font1bis, "Nouvelle Partie", color1bis); // blended rendering for ultra nice text
+  env->text1or = SDL_CreateTextureFromSurface(ren, surf1bis);
+  SDL_FreeSurface(surf1bis);
+  TTF_CloseFont(font1bis);
+
+  /* CHARGER PARTIE BLANC */
+  
+  SDL_Color color2 = { 200,200,200, 255 }; /* blue color in RGBA */
+  TTF_Font * font2 = TTF_OpenFont(FONT, FONTSIZE);
+  if(!font2) ERROR("TTF_OpenFont: %s\n", FONT);
+  TTF_SetFontStyle(font2, TTF_STYLE_NORMAL); // TTF_STYLE_ITALIC | TTF_STYLE_NORMAL
+  SDL_Surface * surf2 = TTF_RenderText_Blended(font2, "Charger Partie", color2); // blended rendering for ultra nice text
+  env->text2 = SDL_CreateTextureFromSurface(ren, surf2);
+  env->text2bis = SDL_CreateTextureFromSurface(ren, surf2);
+  SDL_FreeSurface(surf2);
+  TTF_CloseFont(font2);
+
+  /* CHARGER PARTIE ORANGE */
+  
+  SDL_Color color2bis = {167, 103, 38/* 47,79,79, 255 */}; /* blue color in RGBA */
+  TTF_Font * font2bis = TTF_OpenFont(FONT, FONTSIZE);
+  if(!font2bis) ERROR("TTF_OpenFont: %s\n", FONT);
+  TTF_SetFontStyle(font2bis, TTF_STYLE_ITALIC); // TTF_STYLE_ITALIC | TTF_STYLE_NORMAL
+  SDL_Surface * surf2bis = TTF_RenderText_Blended(font2bis, "Charger Partie", color2bis); // blended rendering for ultra nice text
+  env->text2or = SDL_CreateTextureFromSurface(ren, surf2bis);
+  SDL_FreeSurface(surf2bis);
+  TTF_CloseFont(font2bis);
+
+  /* REGLES BLANC*/
+  
+  SDL_Color color3 = { 200,200,200, 255 }; /* blue color in RGBA */
+  TTF_Font * font3 = TTF_OpenFont(FONT, FONTSIZE);
+  if(!font3) ERROR("TTF_OpenFont: %s\n", FONT);
+  TTF_SetFontStyle(font3, TTF_STYLE_NORMAL); // TTF_STYLE_ITALIC | TTF_STYLE_NORMAL
+  SDL_Surface * surf3 = TTF_RenderUTF8_Blended(font3, "Règles", color3); // blended rendering for ultra nice text
+  env->text3 = SDL_CreateTextureFromSurface(ren, surf3);
+  env->text3bis = SDL_CreateTextureFromSurface(ren, surf3);
+  SDL_FreeSurface(surf3);
+  TTF_CloseFont(font3);
+
+  /* REGLES ORANGE */
+  
+  SDL_Color color3bis = { 167, 103, 38, 255 }; 
+  TTF_Font * font3bis = TTF_OpenFont(FONT, FONTSIZE);
+  if(!font3bis) ERROR("TTF_OpenFont: %s\n", FONT);
+  TTF_SetFontStyle(font3bis, TTF_STYLE_ITALIC); // TTF_STYLE_ITALIC | TTF_STYLE_NORMAL
+  SDL_Surface * surf3bis = TTF_RenderUTF8_Blended(font3bis, "Règles", color3bis); // blended rendering for ultra nice text
+  env->text3or = SDL_CreateTextureFromSurface(ren, surf3bis);
+  SDL_FreeSurface(surf3bis);
+  TTF_CloseFont(font3bis);
+
+  /* QUITTER BLANC*/
+  
+  SDL_Color color4 = { 200,200,200, 255 }; 
+  TTF_Font * font4 = TTF_OpenFont(FONT, FONTSIZE);
+  if(!font4) ERROR("TTF_OpenFont: %s\n", FONT);
+  TTF_SetFontStyle(font4, TTF_STYLE_NORMAL); // TTF_STYLE_ITALIC | TTF_STYLE_NORMAL
+  SDL_Surface * surf4 = TTF_RenderText_Blended(font4, "Quitter", color4); // blended rendering for ultra nice text
+  env->text4 = SDL_CreateTextureFromSurface(ren, surf4);
+  env->text4bis = SDL_CreateTextureFromSurface(ren, surf4);
+  SDL_FreeSurface(surf4);
+  TTF_CloseFont(font4);
+
+  /* QUITTER ORANGE */
+  
+  SDL_Color color4bis = { 167, 103, 38, 255 }; /* blue color in RGBA */
+  TTF_Font * font4bis = TTF_OpenFont(FONT, FONTSIZE);
+  if(!font4bis) ERROR("TTF_OpenFont: %s\n", FONT);
+  TTF_SetFontStyle(font4bis, TTF_STYLE_ITALIC); // TTF_STYLE_ITALIC | TTF_STYLE_NORMAL
+  SDL_Surface * surf4bis = TTF_RenderText_Blended(font4bis, "Quitter", color4bis); // blended rendering for ultra nice text
+  env->text4or = SDL_CreateTextureFromSurface(ren, surf4bis);
+  SDL_FreeSurface(surf4bis);
+  TTF_CloseFont(font4bis);
+
+  /* CHOISIR NIVEAU */
+  
+  SDL_Color color5 = {200,200,200,255};
+  TTF_Font * font5 = TTF_OpenFont(FONT, SIZE);
+  if(!font5) ERROR("TTF_OpenFont: %s\n", FONT);
+  TTF_SetFontStyle(font5, TTF_STYLE_NORMAL);
+  SDL_Surface * surf5 = TTF_RenderText_Blended(font5, "Choisir le niveau", color5);
+  env->choix = SDL_CreateTextureFromSurface(ren,surf5);
+  SDL_FreeSurface(surf5);
+  TTF_CloseFont(font5);
+
+  /* EASY */
+  
+  SDL_Color color6 = {200,200,200,255};
+  TTF_Font * font6 = TTF_OpenFont(FONT, FONTSIZE);
+  if(!font6) ERROR("TTF_OpenFont: %s\n", FONT);
+  TTF_SetFontStyle(font6, TTF_STYLE_NORMAL);
+  SDL_Surface * surf6 = TTF_RenderText_Blended(font6, "Facile", color6);
+  env->easy = SDL_CreateTextureFromSurface(ren,surf6);
+  env->easybis = SDL_CreateTextureFromSurface(ren,surf6);
+  SDL_FreeSurface(surf6);
+  TTF_CloseFont(font6);
+
+  /* EASY ORANGE */
+
+  SDL_Color color6bis = {167,103,38,255};
+  TTF_Font * font6bis = TTF_OpenFont(FONT, FONTSIZE);
+  if(!font6bis) ERROR("TTF_OpenFont: %s\n", FONT);
+  TTF_SetFontStyle(font6bis, TTF_STYLE_NORMAL);
+  SDL_Surface * surf6bis = TTF_RenderText_Blended(font6bis, "Facile", color6bis);
+  env->easyor = SDL_CreateTextureFromSurface(ren,surf6bis);
+  SDL_FreeSurface(surf6bis);
+  TTF_CloseFont(font6bis);
+
+  /* MEDIUM */
+  
+  SDL_Color color7 = {200,200,200,255};
+  TTF_Font * font7 = TTF_OpenFont(FONT, FONTSIZE);
+  if(!font7) ERROR("TTF_OpenFont: %s\n", FONT);
+  TTF_SetFontStyle(font7, TTF_STYLE_NORMAL);
+  SDL_Surface * surf7 = TTF_RenderText_Blended(font7, "Moyen", color7);
+  env->medium = SDL_CreateTextureFromSurface(ren,surf7);
+  env->mediumbis = SDL_CreateTextureFromSurface(ren,surf7);
+  SDL_FreeSurface(surf7);
+  TTF_CloseFont(font7);
+
+  /* MEDIUM ORANGE */
+
+  SDL_Color color7bis = {167,103,38,255};
+  TTF_Font * font7bis = TTF_OpenFont(FONT, FONTSIZE);
+  if(!font7bis) ERROR("TTF_OpenFont: %s\n", FONT);
+  TTF_SetFontStyle(font7bis, TTF_STYLE_NORMAL);
+  SDL_Surface * surf7bis = TTF_RenderText_Blended(font7bis, "Moyen", color7bis);
+  env->mediumor = SDL_CreateTextureFromSurface(ren,surf7bis);
+  SDL_FreeSurface(surf7bis);
+  TTF_CloseFont(font7bis);
+
+  /* HARD */
+  
+  SDL_Color color8 = {200,200,200,255};
+  TTF_Font * font8 = TTF_OpenFont(FONT, FONTSIZE);
+  if(!font8) ERROR("TTF_OpenFont: %s\n", FONT);
+  TTF_SetFontStyle(font8, TTF_STYLE_NORMAL);
+  SDL_Surface * surf8 = TTF_RenderText_Blended(font8, "Difficile", color8);
+  env->hard = SDL_CreateTextureFromSurface(ren,surf8);
+  env->hardbis = SDL_CreateTextureFromSurface(ren,surf8);
+  SDL_FreeSurface(surf8);
+  TTF_CloseFont(font8);
+
+  /* HARD ORANGE */
+
+  SDL_Color color8bis = {167,103,38,255};
+  TTF_Font * font8bis = TTF_OpenFont(FONT, FONTSIZE);
+  if(!font8bis) ERROR("TTF_OpenFont: %s\n", FONT);
+  TTF_SetFontStyle(font8bis, TTF_STYLE_NORMAL);
+  SDL_Surface * surf8bis = TTF_RenderText_Blended(font8bis, "Difficile", color8bis);
+  env->hardor = SDL_CreateTextureFromSurface(ren,surf8bis);
+  SDL_FreeSurface(surf8bis);
+  TTF_CloseFont(font8bis);
+
+  /* FLECHE */
+
+  SDL_Color color9 = {200,200,200,255};
+  TTF_Font * font9 = TTF_OpenFont(FONT, SIZE);
+  if(!font9) ERROR("TTF_OpenFont: %s\n", FONT);
+  TTF_SetFontStyle(font9, TTF_STYLE_NORMAL);
+  SDL_Surface * surf9 = TTF_RenderText_Blended(font9, "<", color9);
+  env->fleche = SDL_CreateTextureFromSurface(ren,surf9);
+  env->flechebis = SDL_CreateTextureFromSurface(ren,surf9);
+  SDL_FreeSurface(surf9);
+  TTF_CloseFont(font9);
+
+  /* FLECHE ORANGE */
+
+  SDL_Color color9bis = {167,103,38,255};
+  TTF_Font * font9bis = TTF_OpenFont(FONT, SIZE);
+  if(!font9bis) ERROR("TTF_OpenFont: %s\n", FONT);
+  TTF_SetFontStyle(font9bis, TTF_STYLE_NORMAL);
+  SDL_Surface * surf9bis = TTF_RenderText_Blended(font9bis, "<", color9bis);
+  env->flecheor = SDL_CreateTextureFromSurface(ren,surf9bis);
+  SDL_FreeSurface(surf9bis);
+  TTF_CloseFont(font9bis);
+
+  /* AIDE */
+
+  SDL_Color color10 = {200,200,200,255};
+  TTF_Font * font10 = TTF_OpenFont(FONT, FONTSIZE);
+  if(!font10) ERROR("TTF_OpenFont: %s\n", FONT);
+  TTF_SetFontStyle(font10, TTF_STYLE_NORMAL);
+  SDL_Surface * surf10 = TTF_RenderText_Blended(font10, "Aide", color10);
+  env->help = SDL_CreateTextureFromSurface(ren, surf10);
+  SDL_FreeSurface(surf10);
+  TTF_CloseFont(font10);
+
+  /* AIDE ORANGE */
+
+  SDL_Color color10bis = {167,103,38,255};
+  TTF_Font * font10bis = TTF_OpenFont(FONT, FONTSIZE);
+  if(!font10bis) ERROR("TTF_OpenFont: %s\n", FONT);
+  TTF_SetFontStyle(font10bis, TTF_STYLE_NORMAL);
+  SDL_Surface * surf10bis = TTF_RenderText_Blended(font10bis, "Aide", color10bis);
+  env->helpor = SDL_CreateTextureFromSurface(ren, surf10bis);
+  SDL_FreeSurface(surf10bis);
+  TTF_CloseFont(font10bis);
+
+  /* SOLUTION */
+
+  SDL_Color color11 = {200,200,200,255};
+  TTF_Font * font11 = TTF_OpenFont(FONT, FONTSIZE);
+  if(!font11) ERROR("TTF_OpenFont: %s\n", FONT);
+  TTF_SetFontStyle(font11, TTF_STYLE_NORMAL);
+  SDL_Surface * surf11 = TTF_RenderText_Blended(font11, "Solution", color11);
+  env->sol = SDL_CreateTextureFromSurface(ren, surf11);
+  SDL_FreeSurface(surf11);
+  TTF_CloseFont(font11);
+
+  /* SOLUTION ORANGE */
+
+  SDL_Color color11bis = {167,103,38,255};
+  TTF_Font * font11bis = TTF_OpenFont(FONT, FONTSIZE);
+  if(!font11bis) ERROR("TTF_OpenFont: %s\n", FONT);
+  TTF_SetFontStyle(font11bis, TTF_STYLE_NORMAL);
+  SDL_Surface * surf11bis = TTF_RenderText_Blended(font11bis, "Aide", color11bis);
+  env->solor = SDL_CreateTextureFromSurface(ren, surf11bis);
+  SDL_FreeSurface(surf11bis);
+  TTF_CloseFont(font11bis);
+
+  /* ACCUEIL */
+
+  SDL_Color color12 = {200,200,200,255};
+  TTF_Font * font12 = TTF_OpenFont(FONT, FONTSIZE);
+  if(!font12) ERROR("TTF_OpenFont: %s\n", FONT);
+  TTF_SetFontStyle(font12, TTF_STYLE_NORMAL);
+  SDL_Surface * surf12 = TTF_RenderText_Blended(font12, "Accueil", color12);
+  env->home = SDL_CreateTextureFromSurface(ren, surf12);
+  env->homebis = SDL_CreateTextureFromSurface(ren, surf12);
+  SDL_FreeSurface(surf12);
+  TTF_CloseFont(font12);
+
+  /* ACCUEIL ORANGE */
+
+  SDL_Color color12bis = {200,200,200,255};
+  TTF_Font * font12bis = TTF_OpenFont(FONT, FONTSIZE);
+  if(!font12bis) ERROR("TTF_OpenFont: %s\n", FONT);
+  TTF_SetFontStyle(font12bis, TTF_STYLE_NORMAL);
+  SDL_Surface * surf12bis = TTF_RenderText_Blended(font12bis, "Accueil", color12bis);
+  env->homeor = SDL_CreateTextureFromSurface(ren, surf12bis);
+  SDL_FreeSurface(surf12bis);
+  TTF_CloseFont(font12bis);
+
+  return env;
+}
+     
+/* **************************************************************** */
+     
+void render(SDL_Window* win, SDL_Renderer* ren, Env * env)
+{
+
+  /* PUT YOUR CODE HERE TO RENDER TEXTURES, ... */
+  SDL_Rect rect;  
+ 
+  /* get current window size */
+  int w, h;
+  SDL_GetWindowSize(win, &w, &h);
+    
+  /* render background texture */
+  SDL_RenderCopy(ren, env->background, NULL, NULL); /* stretch it */
+
+  /* render text texture */
+
+  if(env->menu == 0){
+    
+    /*POSITION TITRE*/
+    SDL_QueryTexture(env->text, NULL, NULL, &rect.w, &rect.h);
+    rect.x = w/2 - rect.w/2; rect.y = h/4 - rect.h/2; 
+    SDL_RenderCopy(ren, env->text, NULL, &rect);
+    
+    /*POSITION JOUER*/
+    SDL_QueryTexture(env->text1, NULL, NULL, &rect.w, &rect.h);
+    rect.x = w/2 - rect.w/2; rect.y = 7*h/16 - rect.h/2; 
+    SDL_RenderCopy(ren, env->text1, NULL, &rect);
+    
+    /*POSITION AIDE*/
+    SDL_QueryTexture(env->text2, NULL, NULL, &rect.w, &rect.h);
+    rect.x = w/2 - rect.w/2; rect.y = 9*h/16 - rect.h/2; 
+    SDL_RenderCopy(ren, env->text2, NULL, &rect);
+    
+    /*POSITION SOLUTION*/
+    SDL_QueryTexture(env->text3, NULL, NULL, &rect.w, &rect.h);
+    rect.x = w/2 - rect.w/2; rect.y = 11*h/16 - rect.h/2; 
+    SDL_RenderCopy(ren, env->text3, NULL, &rect);
+    
+    /*POSITION QUITTER*/
+    SDL_QueryTexture(env->text4, NULL, NULL, &rect.w, &rect.h);
+    rect.x = w/2 - rect.w/2; rect.y = 13*h/16 - rect.h/2; 
+    SDL_RenderCopy(ren, env->text4, NULL, &rect);
+    
+    /* render curseur texture */
+    SDL_QueryTexture(env->curseur, NULL, NULL, &rect.w, &rect.h);
+    rect.x = env->curseur_x - rect.w/2; rect.y = env->curseur_y - rect.h/2; 
+    SDL_RenderCopy(ren, env->curseur, NULL, &rect);
+  }
+
+  else if(env->menu == 1){
+
+    SDL_QueryTexture(env->choix, NULL, NULL, &rect.w, &rect.h);
+    rect.x = w/2- rect.w/2; rect.y = h/4 - rect.h/2;
+    SDL_RenderCopy(ren, env->choix, NULL, &rect);
+
+    SDL_QueryTexture(env->easy, NULL, NULL, &rect.w, &rect.h);
+    rect.x = w/2- rect.w/2; rect.y = 7*h/16 - rect.h/2;
+    SDL_RenderCopy(ren, env->easy, NULL, &rect);
+    
+    SDL_QueryTexture(env->medium, NULL, NULL, &rect.w, &rect.h);
+    rect.x = w/2- rect.w/2; rect.y = 9*h/16 - rect.h/2;
+    SDL_RenderCopy(ren, env->medium, NULL, &rect);
+
+    SDL_QueryTexture(env->hard, NULL, NULL, &rect.w, &rect.h);
+    rect.x = w/2- rect.w/2; rect.y = 11*h/16 - rect.h/2;
+    SDL_RenderCopy(ren, env->hard, NULL, &rect);
+
+    SDL_QueryTexture(env->fleche, NULL, NULL, &rect.w, &rect.h);
+    rect.x = w/2- rect.w/2; rect.y = 13*h/16 - rect.h/2;
+    SDL_RenderCopy(ren, env->fleche, NULL, &rect);
+  }
+
+  else if(env->menu == 2){
+
+    SDL_QueryTexture(env->fleche, NULL, NULL, &rect.w, &rect.h);
+    rect.x = w/33 - rect.w/2; rect.y = 63*h/66 - rect.h/2;
+    SDL_RenderCopy(ren, env->fleche, NULL, &rect);
+  }
+
+  else if(env->game){
+
+    SDL_QueryTexture(env->help, NULL, NULL, &rect.w, &rect.h);
+    rect.x = w/4 - rect.w/2; rect.y = 32*h/33 - rect.h/2;
+    SDL_RenderCopy(ren, env->help, NULL, &rect);
+
+    SDL_QueryTexture(env->sol, NULL, NULL, &rect.w, &rect.h);
+    rect.x = 3*w/4 - rect.w/2; rect.y = 32*h/33 - rect.h/2;
+    SDL_RenderCopy(ren, env->sol, NULL, &rect);
+
+    SDL_QueryTexture(env->home, NULL, NULL, &rect.w, &rect.h);
+    rect.x = w/2 - rect.w/2; rect.y = h/33 - rect.h/2;
+    SDL_RenderCopy(ren, env->home, NULL, &rect);
+  }
+  
+    
+}
+     
+/* **************************************************************** */
+     
+     
+bool process(SDL_Window* win, SDL_Renderer* ren, Env * env, SDL_Event * e)
+{
+  int w, h;
+  SDL_GetWindowSize(win, &w, &h);
+  
+  
+  /* generic events */  
+  if (e->type == SDL_QUIT) {
+    return true;
+  }
+  
+  if(env->menu == 0){
+    if(e->type == SDL_MOUSEMOTION){
+      SDL_Point curseur;
+      SDL_GetMouseState(&curseur.x, &curseur.y);
+      if(curseur.x < 7*w/12 && curseur.x > 5*w/12){
+	if(curseur.y < 15*h/32 && curseur.y > 13*h/32){  /* NOUVELLE PARTIE */
+	  env->text1 = env->text1or;
+	}
+	else if(curseur.y < 19*h/32 && curseur.y > 17*h/32){  /* CHARGER PARTIE */
+	  env->text2 = env->text2or;
+	}
+	else if(curseur.y < 23*h/32 && curseur.y > 21*h/32){ /* REGLES */
+	  env->text3 = env->text3or;
+	}
+	else if(curseur.y < 27*h/32 && curseur.y > 25*h/32){ /* QUITTER */
+	  env->text4 = env->text4or;
+	}
+	else{
+	  env->text1 = env->text1bis;
+	  env->text2 = env->text2bis;
+	  env->text3 = env->text3bis;
+	  env->text4 = env->text4bis;
+	}
+      }
+    }
+    else if(e->type == SDL_MOUSEBUTTONDOWN){
+      SDL_Point curseur;
+      SDL_GetMouseState(&curseur.x,&curseur.y);
+      if(curseur.x < 7*w/12 && curseur.x > 5*w/12){
+	if(curseur.y < 15*h/32 && curseur.y > 13*h/32){  /* NOUVELLE PARTIE */
+	  env->menu += 1;
+	  env->text1 = env->text1bis;
+	}
+	else if(curseur.y < 19*h/32 && curseur.y > 17*h/32){  /* CHARGER PARTIE */
+	  env->menu = env->game;
+	  env->text2 = env->text2bis;
+	}
+	else if(curseur.y < 23*h/32 && curseur.y > 21*h/32){ /* REGLES */
+	  env->menu += 2;
+	  env->text3 = env->text3bis;
+	}
+	else if(curseur.y < 27*h/32 && curseur.y > 25*h/32){ /* QUITTER */
+	  return true;
+	}
+      }
+    }
+  }
+  else if(env->menu == 1){
+    if(e->type == SDL_MOUSEMOTION){
+      SDL_Point curseur;
+      SDL_GetMouseState(&curseur.x, &curseur.y);
+      if(curseur.x < 7*w/12 && curseur.x > 5*w/12){
+	if(curseur.y < 15*h/32 && curseur.y > 13*h/32){  /* NOUVELLE PARTIE */
+	  env->easy = env->easyor;
+	}
+	else if(curseur.y < 19*h/32 && curseur.y > 17*h/32){  /* CHARGER PARTIE */
+	  env->medium = env->mediumor;
+	}
+	else if(curseur.y < 23*h/32 && curseur.y > 21*h/32){ /* REGLES */
+	  env->hard = env->hardor;
+	}
+	else if(curseur.y < 27*h/32 && curseur.y > 25*h/32){
+	  env->fleche = env->flecheor;
+	}
+	else{
+	  env->easy = env->easybis;
+	  env->medium = env->mediumbis;
+	  env->hard = env->hardbis;
+	  env->fleche = env->flechebis;
+	}
+      }
+      else{
+	env->easy = env->easybis;
+	env->medium = env->mediumbis;
+	env->hard = env->hardbis;
+	env->fleche = env->flechebis;
+      }
+    }
+    if(e->type == SDL_MOUSEBUTTONDOWN){
+      SDL_Point curseur;
+      SDL_GetMouseState(&curseur.x,&curseur.y);
+      if(curseur.x < 7*w/12 && curseur.x > 5*w/12){
+	if(curseur.y < 15*h/32 && curseur.y > 13*h/32){
+	  env->menu = env->game;
+	  env->easy = env->easybis;
+	}
+	if(curseur.y < 19*h/32 && curseur.y > 17*h/32){
+	  env->menu = env->game;
+	  env->medium = env->mediumbis;
+	}
+	if(curseur.y < 23*h/32 && curseur.y > 21*h/32){
+	  env->menu = env->game;
+	  env->hard = env->hardbis;
+	}
+	else if(curseur.y < 27*h/32 && curseur.y > 25*h/32){ /* QUITTER */
+	  env->menu -=1;
+	  env->fleche = env->flechebis;
+	}
+      }   
+    }
+  }
+  else if(env->menu == 2){
+    if(e->type == SDL_MOUSEMOTION){
+      SDL_Point curseur;
+      SDL_GetMouseState(&curseur.x, &curseur.y);
+      if(curseur.x < 2*w/33){
+	if(curseur.y > 60*h/66){
+	  env->fleche = env->flecheor;
+	}
+	else{
+	  env->fleche = env->flechebis;
+	}
+      }
+      else{
+	env->fleche = env->flechebis;
+      }
+    }
+    else if(e->type == SDL_MOUSEBUTTONDOWN){
+      SDL_Point curseur;
+      SDL_GetMouseState(&curseur.x, &curseur.y);
+      if(curseur.x < 2*w/33){
+	if(curseur.y > 60*h/66){
+	  env->menu -= 2;
+	  env->fleche = env->flechebis;
+	}
+      }
+    }
+  }
+  else if(env->game){
+    if(e->type == SDL_MOUSEMOTION){
+      SDL_Point curseur;
+      SDL_GetMouseState(&curseur.x, &curseur.y);
+      if(curseur.x > 3*w/8 && curseur.x < 5*w/8){
+	if(curseur.y > h/66 && curseur.y < 3*h/33){
+	  env->home = env->homeor;
+	}
+	else{
+	  env->home = env->homebis;
+	}
+      }
+      else{
+	env->home = env->homebis;
+      }
+    }
+    if(e->type == SDL_MOUSEBUTTONDOWN){
+      SDL_Point curseur;
+      SDL_GetMouseState(&curseur.x, &curseur.y);
+      if(curseur.x > 3*w/8 && curseur.x < 5*w/8){
+	if(curseur.y > h/66 && curseur.y < 3*h/33){
+	  env->menu = 0;
+	}
+      }
+    }
+  }
+  /*else if(e->type == SDL_KEYDOWN){
+    switch(e->key.keysym.sym){
+    case SDLK_DOWN: if(env->curseur_y < 12*h/16){ /* De nouvelle partie à charger partie */
+  /*if(env->curseur_y < 8*h/16 && env->curseur_y > 6*h/16){
+	  env->tmp = env->text1;
+	  env->text1 = env->text1bis;
+	  env->text1bis = env->tmp;
+	  env->tmp = env->text2;
+	  env->text2 = env->text2or;
+	  env->text2or = env->tmp;
+	}
+	else if(env->curseur_y < 10*h/16 && env->curseur_y > 8*h/16){ /* De charger partie à règles */
+  /*env->tmp = env->text2;
+	  env->text2 = env->text2or;
+	  env->text2or = env->tmp;
+	  env->tmp = env->text3;
+	  env->text3 = env->text3or;
+	  env->text3or = env->tmp;
+	}
+	else if(env->curseur_y < 12*h/16 && env->curseur_y > 10*h/16){ /* De règles à quitter */
+  /*env->tmp = env->text3;
+	  env->text3 = env->text3or;
+	  env->text3or = env->tmp;
+	  env->tmp = env->text4;
+	  env->text4 = env->text4or;
+	  env->text4or = env->tmp;
+	}
+	env->curseur_y += 60;
+      }break;
+    case SDLK_UP: if(env->curseur_y > 7*h/16){ /* De charger partie à nouvelle partie */
+  /*if(env->curseur_y < 10*h/16 && env->curseur_y > 8*h/16){
+	  env->tmp = env->text2;
+	  env->text2 = env->text2or;
+	  env->text2or = env->tmp;
+	  env->tmp = env->text1;
+	  env->text1 = env->text1bis;
+	  env->text1bis = env->tmp;
+	}
+	else if(env->curseur_y < 12*h/16 && env->curseur_y > 10*h/16){ /* De règles à charger partie */
+  /*env->tmp = env->text3;
+	  env->text3 = env->text3or;
+	  env->text3or = env->tmp;
+	  env->tmp = env->text2;
+	  env->text2 = env->text2or;
+	  env->text2or = env->tmp;
+	}
+	else if(env->curseur_y < 14*h/16 && env->curseur_y > 12*h/16){ /* De quitter à règles */
+  /*env->tmp = env->text4;
+	  env->text4 = env->text4or;
+	  env->text4or = env->tmp;
+	  env->tmp = env->text3;
+	  env->text3 = env->text3or;
+	  env->text3or = env->tmp;
+	}
+	env->curseur_y -= 60;
+      }break;
+    case SDLK_RETURN:
+      if(env->curseur_y < 8*h/16 && env->curseur_y > 6*h/16){ /* Nouvelle partie */
+  /*SDL_DestroyTexture(env->text);
+	SDL_DestroyTexture(env->text1);
+	SDL_DestroyTexture(env->text2);
+	SDL_DestroyTexture(env->text3);
+	SDL_DestroyTexture(env->text4);
+	
+	env->text = env->choix;
+	env->text1 = env->easy;
+	env->text2 = env->medium;
+	env->text3 = env->hard;
+
+	
+	render(win, ren, env); 
+	SDL_RenderPresent(ren);
+        
+      }
+      else if(env->curseur_y < 10*h/16 && env->curseur_y > 8*h/16){ /* Charger partie */
+  /*return true;
+      }
+      else if(env->curseur_y < 12*h/16 && env->curseur_y > 10*h/16){ /* Règles */
+  /*return true;
+      }
+      else if(env->curseur_y < 14*h/16 && env->curseur_y > 12*h/16){ /* Quitter */
+  /*return true;
+      }break;
+    }
+  }
+  /* PUT YOUR CODE HERE TO PROCESS EVENTS */
+  
+  return false; 
+}
+
+/* **************************************************************** */
+
+void clean(SDL_Window* win, SDL_Renderer* ren, Env * env)
+{
+  /* PUT YOUR CODE HERE TO CLEAN MEMORY */
+  SDL_DestroyTexture(env->background);
+  SDL_DestroyTexture(env->text);
+  SDL_DestroyTexture(env->text1);  
+  SDL_DestroyTexture(env->text2);  
+  SDL_DestroyTexture(env->text3);
+  SDL_DestroyTexture(env->text4);
+  SDL_DestroyTexture(env->curseur);
+
+  free(env);
+}
+     
+/* **************************************************************** */
+

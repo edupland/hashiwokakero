@@ -1,0 +1,69 @@
+AR = ar
+ARFLAGS = rvs
+LDFLAGS = -lhashi -lm -L$(ROOT)/lib
+MKDIR = mkdir -p
+ROOT = ..
+DIR_LIB = $(ROOT)/lib/
+DIR_BIN = $(ROOT)/bin/
+BIN = bin/
+CPPFLAGS = -I$(ROOT)/include
+CFLAGS = -g -Wall -std=c99
+TESTG = test_game
+HASHI = hashi_text
+LIB = libhashi
+TESTT = test_toolbox
+SRC = $(wildcard *.c)
+DEPS = $(SRC:.c=.d)
+
+all: $(HASHI) $(TESTG)1 $(TESTG)2 $(TESTG)3 $(TESTG)4
+
+$(LIB).a: node.o game.o
+	$(MKDIR) $(DIR_LIB)
+	$(AR) $(ARFLAGS) $(DIR_LIB)$@ $^
+
+$(HASHI): $(HASHI).o node.o game.o grid_update.o init_game.o user_interac.o
+	$(MKDIR) $(DIR_BIN)
+	cp exemples_jeu.txt $(DIR_BIN)
+	$(CC) $^ $(LDFLAGS) -o $(DIR_BIN)$@
+
+$(TESTG)1: $(TESTT).o $(TESTG)1.o
+	$(MKDIR) $(DIR_BIN)
+	$(CC) $^ $(LDFLAGS) -o $(DIR_BIN)$@
+
+$(TESTG)2: $(TESTT).o $(TESTG)2.o
+	$(CC) $^ $(LDFLAGS) -o $(DIR_BIN)$@
+
+$(TESTG)3: $(TESTG)3.o $(TESTT).o
+	$(CC) $^ $(LDFLAGS) -o $(DIR_BIN)$@
+
+$(TESTG)4: $(TESTG)4.o $(TESTT).o
+	$(CC) $^ $(LDFLAGS) -o $(DIR_BIN)$@
+
+#création des dépendances.
+-include $(DEPS)
+
+%.d: %.c
+	$(CC) -MM $(CPPFLAGS) $*.c > $*.d
+
+.PHONY: clean clean_lib clean_ex all test
+
+#supprime les fichiers contenant les dépendances et les fichiers objets.
+clean:
+	rm -f *.d *.o 
+
+#supprime la librairie libhashi.a
+clean_lib:
+	rm -rf $(DIR_LIB)
+
+#supprime les executables
+clean_ex:
+	rm -rf $(DIR_BIN)
+
+clean_all: clean clean_ex clean_lib
+
+
+test: $(TESTG)1 $(TESTG)2 $(TESTG)3 $(TESTG)4
+	$(DIR_BIN)test_game1
+	$(DIR_BIN)test_game2
+	$(DIR_BIN)test_game3
+	$(DIR_BIN)test_game4

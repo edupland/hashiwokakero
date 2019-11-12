@@ -1,0 +1,38 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/oknax/Bureau/Licence 2/git (copie)/hashitm4b/src/game.c
+stdlib.h
+-
+stdio.h
+-
+stdbool.h
+-
+node.h
+/home/oknax/Bureau/Licence 2/git (copie)/hashitm4b/src/node.h
+game.h
+/home/oknax/Bureau/Licence 2/git (copie)/hashitm4b/src/game.h
+
+/home/oknax/Bureau/Licence 2/git (copie)/hashitm4b/src/node.c
+stdlib.h
+-
+stdio.h
+-
+stdbool.h
+-
+
+include/game.h
+stdbool.h
+-
+node.h
+include/node.h
+
+include/node.h
+stdbool.h
+-
+

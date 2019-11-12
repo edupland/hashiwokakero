@@ -1,0 +1,1 @@
+/usr/bin/cc  -std=c99 -g -Wall   CMakeFiles/hashi_solve.dir/hashi_solve.c.o CMakeFiles/hashi_solve.dir/init_game.c.o  -o hashi_solve -rdynamic libhashi.a -lm 

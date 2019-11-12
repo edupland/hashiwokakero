@@ -1,0 +1,4 @@
+/net/cremi/edupland/L2/Projet_Tech/hashitm4b2/sdl2-demo/CMakeFiles/edit_cache.dir
+/net/cremi/edupland/L2/Projet_Tech/hashitm4b2/sdl2-demo/CMakeFiles/rebuild_cache.dir
+/net/cremi/edupland/L2/Projet_Tech/hashitm4b2/sdl2-demo/CMakeFiles/model.dir
+/net/cremi/edupland/L2/Projet_Tech/hashitm4b2/sdl2-demo/CMakeFiles/demo.dir

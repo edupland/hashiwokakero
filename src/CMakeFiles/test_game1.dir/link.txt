@@ -1,0 +1,1 @@
+/usr/bin/cc  -std=c99 -g -Wall   CMakeFiles/test_game1.dir/test_game1.c.o CMakeFiles/test_game1.dir/test_toolbox.c.o  -o test_game1 -rdynamic libhashi.a -lm 

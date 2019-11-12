@@ -1,0 +1,10 @@
+/home/oknax/Bureau/Licence 2/git/hashitm4b/src/./bin/hashi_text
+/home/oknax/Bureau/Licence 2/git/hashitm4b/src/./bin/test_game1
+/home/oknax/Bureau/Licence 2/git/hashitm4b/src/./bin/test_game2
+/home/oknax/Bureau/Licence 2/git/hashitm4b/src/./bin/test_game3
+/home/oknax/Bureau/Licence 2/git/hashitm4b/src/./bin/test_game4
+/home/oknax/Bureau/Licence 2/git/hashitm4b/src/./bin/hashi_solve
+/home/oknax/Bureau/Licence 2/git/hashitm4b/src/./lib/libhashi.a
+/home/oknax/Bureau/Licence 2/git/hashitm4b/src/./bin/game_default.txt
+/home/oknax/Bureau/Licence 2/git/hashitm4b/src/./bin/game_easy.txt
+/home/oknax/Bureau/Licence 2/git/hashitm4b/src/./bin/game_medium.txt
